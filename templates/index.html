@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard Satelital - Incendios Forestales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/estilos.css" />
+</head>
+<body>
+    <header class="encabezado">
+        <div class="marca">
+            <span class="led"></span>
+            <h1>Monitoreo Satelital de Incendios</h1>
+        </div>
+        <p class="subtitulo">Simulación con realimentación negativa · Sudamérica</p>
+    </header>
+
+    <main class="dashboard">
+        <!-- PANEL IZQUIERDO: Formulario -->
+        <section class="panel panel-form">
+            <h2>Condiciones del entorno</h2>
+            <div class="scroll-area" id="scroll-inputs">
+                <form id="form-condiciones">
+                    <label>
+                        <span class="titulo-campo">Tamaño del bosque</span>
+                        <span class="unidad">hectáreas</span>
+                        <input name="tamano_bosque" type="number" step="0.1" placeholder="250" required />
+                        <small>Superficie total expuesta al incendio activo.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Velocidad del viento</span>
+                        <span class="unidad">kilómetros por hora</span>
+                        <input name="velocidad_viento" type="number" step="0.1" placeholder="22" required />
+                        <small>Aumenta la velocidad de propagación del frente de fuego.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Temperatura ambiente</span>
+                        <span class="unidad">grados Celsius</span>
+                        <input name="temperatura" type="number" step="0.1" placeholder="31" required />
+                        <small>Favorece la ignición y el secado de la vegetación.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Humedad relativa</span>
+                        <span class="unidad">porcentaje</span>
+                        <input name="humedad" type="number" step="0.1" placeholder="35" required />
+                        <small>Una humedad alta desacelera el avance del fuego.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Carga de combustible</span>
+                        <span class="unidad">índice 0-100</span>
+                        <input name="combustible" type="number" step="0.1" placeholder="65" required />
+                        <small>Disponibilidad de material vegetal fino y grueso.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Distancia al foco</span>
+                        <span class="unidad">kilómetros</span>
+                        <input name="distancia_foco" type="number" step="0.1" placeholder="12" required />
+                        <small>Determina el retardo en la llegada de recursos.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Pendiente del terreno</span>
+                        <span class="unidad">grados</span>
+                        <input name="pendiente" type="number" step="0.1" placeholder="18" required />
+                        <small>Pendientes pronunciadas aceleran el frente de llamas.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Velocidad brigada terrestre</span>
+                        <span class="unidad">kilómetros por hora</span>
+                        <input name="velocidad_brigada" type="number" step="0.1" placeholder="6" required />
+                        <small>Define el tiempo de acceso de los brigadistas.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Velocidad helicóptero</span>
+                        <span class="unidad">kilómetros por hora</span>
+                        <input name="velocidad_helicoptero" type="number" step="0.1" placeholder="140" required />
+                        <small>Tiempo de arribo y ciclo de descarga aérea.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Capacidad control brigada</span>
+                        <span class="unidad">megavatios hora</span>
+                        <input name="capacidad_control_brigada" type="number" step="0.1" placeholder="4" required />
+                        <small>Eficiencia para reducir la energía liberada por el fuego.</small>
+                    </label>
+                    <label>
+                        <span class="titulo-campo">Capacidad descarga helicóptero</span>
+                        <span class="unidad">megavatios hora</span>
+                        <input name="capacidad_descarga_helicoptero" type="number" step="0.1" placeholder="9" required />
+                        <small>Potencia de supresión por ciclo de descarga aérea.</small>
+                    </label>
+                </form>
+            </div>
+            <div class="acciones">
+                <button id="btn-simular" type="button">Iniciar simulación</button>
+                <p class="nota">Todos los datos deben ser ingresados por el usuario.</p>
+            </div>
+        </section>
+
+        <!-- PANEL DERECHO SUPERIOR: Radar -->
+        <section class="panel panel-radar">
+            <div class="radar-header">
+                <h2>Escaneo satelital</h2>
+                <span id="estado-escaneo">Monitoreando zona</span>
+            </div>
+            <canvas id="canvas-radar"></canvas>
+        </section>
+
+        <!-- PANEL DERECHO INFERIOR: Gráfica -->
+        <section class="panel panel-grafica">
+            <div class="grafica-header">
+                <h2>Proyección: Intensidad vs Tiempo</h2>
+            </div>
+            <canvas id="grafica"></canvas>
+        </section>
+
+        <!-- PANEL DERECHO INFERIOR: Mapa operativo ligero -->
+        <section class="panel panel-mapa">
+            <div class="mapa-header">
+                <h2>Mapa operativo (perímetro y focos)</h2>
+                <span class="subtexto">Capa ligera generada con los datos de monitoreo.</span>
+            </div>
+            <canvas id="canvas-mapa"></canvas>
+        </section>
+
+        <!-- PANEL INFERIOR COMPLETO: Recursos -->
+        <section class="panel panel-recursos">
+            <div class="recursos-header">
+                <h2>Informes de recursos (monitoreo)</h2>
+                <span class="subtexto">Cada simulación genera un reporte con los datos del monitoreo ingresado.</span>
+            </div>
+            <div id="salida-recursos" class="tarjetas"></div>
+        </section>
+    </main>
+
+    <script src="/static/js/controlador.js"></script>
+</body>
+</html>
